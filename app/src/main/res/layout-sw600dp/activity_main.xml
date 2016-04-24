@@ -28,7 +28,7 @@
             android:divider="?android:attr/dividerHorizontal"
             android:orientation="horizontal"
             tools:context="com.example.android.sunshine.app.MainActivity"
-            android:paddingTop="@dimen/padding_16">
+            android:padding="@dimen/padding_16">
 
         <!--
         This layout is a two-pane layout for the Items master/detail flow.

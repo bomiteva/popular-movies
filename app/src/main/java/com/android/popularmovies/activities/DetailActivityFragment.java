@@ -49,11 +49,16 @@ public class DetailActivityFragment extends Fragment {
         movieRating = (TextView) rootView.findViewById(R.id.movie_rating);
         movieOverview = (TextView) rootView.findViewById(R.id.movie_overview);
 
+        Bundle bundle;
         Intent intent = getActivity().getIntent();
         if (intent != null && intent.getExtras() != null) {
-            Bundle bundle = intent.getExtras();
-            movie = bundle.getParcelable(PARAM_MOVIE);
+            bundle = intent.getExtras();
+        } else {
+            bundle = getArguments();
+        }
 
+        if (bundle != null) {
+            movie = bundle.getParcelable(PARAM_MOVIE);
             displayData(movie);
         }
 
