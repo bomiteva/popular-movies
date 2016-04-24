@@ -1,6 +1,5 @@
 package com.android.popularmovies.activities;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
@@ -46,6 +45,18 @@ public class MainFragment extends Fragment {
     private ArrayAdapter<Movie> moviesAdapter;
     private String actionType;
 
+    /**
+     * A callback interface that all activities containing this fragment must
+     * implement. This mechanism allows activities to be notified of item
+     * selections.
+     */
+    public interface Callback {
+        /**
+         * MainFragmentCallback for when an item has been selected.
+         */
+        public void onItemSelected(Movie movie);
+    }
+
     public MainFragment() {
     }
 
@@ -67,13 +78,7 @@ public class MainFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Movie movie = moviesAdapter.getItem(position);
-
-                Bundle bundle = new Bundle();
-                bundle.putParcelable(DetailActivityFragment.PARAM_MOVIE, movie);
-
-                Intent intent = new Intent(getActivity(), DetailActivity.class);
-                intent.putExtras(bundle);
-                startActivity(intent);
+                ((Callback) getActivity()).onItemSelected(movie);
             }
         });
 

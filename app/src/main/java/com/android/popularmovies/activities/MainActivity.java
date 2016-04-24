@@ -1,12 +1,14 @@
 package com.android.popularmovies.activities;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
 import com.android.popularmovies.R;
+import com.android.popularmovies.model.Movie;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements MainFragment.Callback {
 
     private static final String DETAILFRAGMENT_TAG = "DFTAG";
     private boolean mTwoPane;
@@ -33,6 +35,28 @@ public class MainActivity extends AppCompatActivity {
             }
         } else {
             mTwoPane = false;
+        }
+    }
+
+    @Override
+    public void onItemSelected(Movie movie) {
+        Bundle bundle = new Bundle();
+        bundle.putParcelable(DetailActivityFragment.PARAM_MOVIE, movie);
+
+        if (mTwoPane) {
+            // In two-pane mode, show the detail view in this activity by
+            // adding or replacing the detail fragment using a
+            // fragment transaction.
+            DetailActivityFragment fragment = new DetailActivityFragment();
+            fragment.setArguments(bundle);
+
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.movie_detail_container, fragment, DETAILFRAGMENT_TAG)
+                    .commit();
+        } else {
+            Intent intent = new Intent(this, DetailActivity.class);
+            intent.putExtras(bundle);
+            startActivity(intent);
         }
     }
 }
