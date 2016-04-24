@@ -3,6 +3,7 @@ package com.android.popularmovies.service;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
+import com.android.popularmovies.BuildConfig;
 import com.google.gson.JsonElement;
 
 import java.io.IOException;
@@ -33,7 +34,7 @@ public final class ApiService {
     private final String LOG_TAG = ApiService.class.getSimpleName();
 
     private static String API_END_POINT = "http://api.themoviedb.org";
-    private static String API_KEY_VALUE = "3391f86c8306a66b34a63587c8c1b035";
+    private static String API_KEY_VALUE = BuildConfig.MOVIE_API_KEY;
     private static String API_KEY = "api_key";
 
     private static volatile ApiService instance;
