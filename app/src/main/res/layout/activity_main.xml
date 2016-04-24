@@ -21,6 +21,12 @@
 
     </android.support.design.widget.AppBarLayout>
 
-    <include layout="@layout/content_main" />
+    <fragment xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/fragment_movies"
+        android:name="com.android.popularmovies.activities.MainFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        tools:layout="@layout/fragment_main" />
 
 </android.support.design.widget.CoordinatorLayout>

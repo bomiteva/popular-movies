@@ -3,6 +3,7 @@ package com.android.popularmovies.activities;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -96,9 +97,9 @@ public class MainFragment extends Fragment {
         super.onStart();
 
         if (actionType == null || actionType.equals(POPULAR_ACTION)) {
-            executePopularMovies();
+            executeMoviesTask(POPULAR_ACTION);
         } else {
-            executeTopRatedMovies();
+            executeMoviesTask(TOP_RATED_ACTION);
         }
     }
 
@@ -134,33 +135,35 @@ public class MainFragment extends Fragment {
         int id = item.getItemId();
 
         if (id == R.id.action_popular) {
-            executePopularMovies();
-            setActionType(POPULAR_ACTION);
+            executeMoviesTask(POPULAR_ACTION);
             return true;
         }
 
         if (id == R.id.action_top_rated) {
-            executeTopRatedMovies();
-            setActionType(TOP_RATED_ACTION);
+            executeMoviesTask(TOP_RATED_ACTION);
             return true;
         }
 
         return super.onOptionsItemSelected(item);
     }
 
-    private void executePopularMovies() {
+    private void executeMoviesTask(String action) {
         ApiService apiService = ApiService.getInstance();
-        apiService.getPopularMovies().subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(onCompleted);
 
-    }
+        if (action.equals(POPULAR_ACTION)) {
+            apiService.getPopularMovies().subscribeOn(Schedulers.newThread())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(onCompleted);
+            ((AppCompatActivity) getActivity()).getSupportActionBar().setSubtitle(R.string.action_popular);
 
-    private void executeTopRatedMovies() {
-        ApiService apiService = ApiService.getInstance();
-        apiService.getTopRatedMovies().subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(onCompleted);
+        } else {
+            apiService.getTopRatedMovies().subscribeOn(Schedulers.newThread())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(onCompleted);
+            ((AppCompatActivity) getActivity()).getSupportActionBar().setSubtitle(R.string.action_top_rated);
+        }
+
+        setActionType(action);
 
     }
 
