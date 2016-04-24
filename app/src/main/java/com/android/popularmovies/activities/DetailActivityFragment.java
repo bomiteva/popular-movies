@@ -50,7 +50,7 @@ public class DetailActivityFragment extends Fragment {
         movieOverview = (TextView) rootView.findViewById(R.id.movie_overview);
 
         Intent intent = getActivity().getIntent();
-        if (intent != null ) {
+        if (intent != null && intent.getExtras() != null) {
             Bundle bundle = intent.getExtras();
             movie = bundle.getParcelable(PARAM_MOVIE);
 
