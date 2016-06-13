@@ -22,6 +22,7 @@ import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 import retrofit2.http.GET;
+import retrofit2.http.Path;
 import rx.Observable;
 import rx.Scheduler;
 import rx.schedulers.Schedulers;
@@ -127,9 +128,16 @@ public final class ApiService {
         return popularMoviesApi.getPopularMovies();
     }
 
-
     public Observable<Response<JsonElement>> getTopRatedMovies() {
         return popularMoviesApi.getTopRatedMovies();
+    }
+
+    public Observable<Response<JsonElement>> getVideosByMovieId(Long movieId) {
+        return popularMoviesApi.getVideosByMovieId(movieId);
+    }
+
+    public Observable<Response<JsonElement>> getReviewsByMovieId(Long movieId) {
+        return popularMoviesApi.getReviewsByMovieId(movieId);
     }
 
     private interface PopularMoviesApi {
@@ -140,6 +148,12 @@ public final class ApiService {
         // GET http://api.themoviedb.org/3/movie/top_rated
         @GET("/3/movie/top_rated")
         Observable<Response<JsonElement>> getTopRatedMovies();
+
+        @GET("3/movie/{id}/videos")
+        Observable<Response<JsonElement>> getVideosByMovieId(@Path("id") Long movieId);
+
+        @GET("3/movie/{id}/reviews")
+        Observable<Response<JsonElement>> getReviewsByMovieId(@Path("id") Long movieId);
 
     }
 }

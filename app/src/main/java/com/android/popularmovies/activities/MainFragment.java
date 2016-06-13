@@ -1,7 +1,11 @@
 package com.android.popularmovies.activities;
 
+import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -11,13 +15,14 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.GridView;
+import android.widget.Toast;
 
 import com.android.popularmovies.R;
 import com.android.popularmovies.adapter.MovieAdapter;
+import com.android.popularmovies.data.MovieContract;
+import com.android.popularmovies.model.JSONDataParser;
 import com.android.popularmovies.model.Movie;
-import com.android.popularmovies.model.MovieDataParser;
 import com.android.popularmovies.service.ApiService;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -34,15 +39,17 @@ import rx.schedulers.Schedulers;
 /**
  * A placeholder fragment containing a simple view.
  */
-public class MainFragment extends Fragment {
+public class MainFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
     private final String LOG_TAG = MainFragment.class.getSimpleName();
 
+    private static final int MOVIES_LOADER = 0;
     private final String POPULAR_ACTION = "popular";
     private final String TOP_RATED_ACTION = "top_rated";
+    private final String FAVOURITE_ACTION = "favourite";
     private final String PARAM_ACTION = String.format("PARAM_ACTION:%s", this.getClass().getName());
 
-    private ArrayAdapter<Movie> moviesAdapter;
+    private MovieAdapter moviesAdapter;
     private String actionType;
 
     /**
@@ -101,10 +108,20 @@ public class MainFragment extends Fragment {
     public void onStart() {
         super.onStart();
 
-        if (actionType == null || actionType.equals(POPULAR_ACTION)) {
+        if (null == actionType) {
             executeMoviesTask(POPULAR_ACTION);
         } else {
-            executeMoviesTask(TOP_RATED_ACTION);
+            switch (actionType) {
+                case POPULAR_ACTION:
+                    executeMoviesTask(POPULAR_ACTION);
+                    break;
+                case TOP_RATED_ACTION:
+                    executeMoviesTask(TOP_RATED_ACTION);
+                    break;
+                case FAVOURITE_ACTION:
+                    getLoaderManager().initLoader(MOVIES_LOADER, null, this);
+                    break;
+            }
         }
     }
 
@@ -140,12 +157,20 @@ public class MainFragment extends Fragment {
         int id = item.getItemId();
 
         if (id == R.id.action_popular) {
+            getLoaderManager().destroyLoader(MOVIES_LOADER);
             executeMoviesTask(POPULAR_ACTION);
             return true;
         }
 
         if (id == R.id.action_top_rated) {
+            getLoaderManager().destroyLoader(MOVIES_LOADER);
             executeMoviesTask(TOP_RATED_ACTION);
+            return true;
+        }
+
+        if (id == R.id.action_favorites) {
+            getLoaderManager().initLoader(MOVIES_LOADER, null, this);
+            setActionType(FAVOURITE_ACTION);
             return true;
         }
 
@@ -180,7 +205,7 @@ public class MainFragment extends Fragment {
 
         @Override
         public void onError(Throwable e) {
-            Log.e(LOG_TAG, e.toString());
+            Toast.makeText(getContext(), getActivity().getString(R.string.message_no_movie_data_error), Toast.LENGTH_SHORT).show();
         }
 
         @Override
@@ -195,7 +220,7 @@ public class MainFragment extends Fragment {
                 if (json != null) {
                     try {
                         moviesAdapter.clear();
-                        moviesAdapter.addAll(MovieDataParser.getMovies(json));
+                        moviesAdapter.addAll(JSONDataParser.getMovies(json));
                     } catch (JSONException e) {
                         Log.e(LOG_TAG, "Error ", e);
                     }
@@ -206,5 +231,27 @@ public class MainFragment extends Fragment {
 
     public void setActionType(String actionType) {
         this.actionType = actionType;
+    }
+
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        return new CursorLoader(getContext(),
+                MovieContract.MovieEntry.CONTENT_URI,
+                MovieContract.MovieEntry.MOVIE_COLUMNS,
+                null,
+                null,
+                null);
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        moviesAdapter.clear();
+        moviesAdapter.addData(data);
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setSubtitle(R.string.action_favorites);
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+
     }
 }

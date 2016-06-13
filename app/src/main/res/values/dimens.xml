@@ -6,6 +6,10 @@
     <!-- padding -->
     <dimen name="padding_16">16dp</dimen>
 
+    <!-- margin -->
+    <dimen name="margin_8">8dp</dimen>
+    <dimen name="margin_16">16dp</dimen>
+
     <!-- text size -->
     <dimen name="large_font_size">20sp</dimen>
     <dimen name="medium_font_size">14sp</dimen>
