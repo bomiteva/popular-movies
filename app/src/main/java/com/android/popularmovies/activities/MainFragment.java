@@ -66,7 +66,7 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
         /**
          * MainFragmentCallback for when an menu item has been selected.
          */
-        public void onMenuItemSelected();
+        public void displayEmptyState(boolean isEmptyView);
 
     }
 
@@ -160,7 +160,7 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // display empty view
-        ((Callback) getActivity()).onMenuItemSelected();
+        ((Callback) getActivity()).displayEmptyState(true);
 
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long

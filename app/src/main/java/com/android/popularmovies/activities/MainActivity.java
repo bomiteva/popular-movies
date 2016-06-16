@@ -56,6 +56,7 @@ public class MainActivity extends AppCompatActivity implements MainFragment.Call
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.movie_detail_container, fragment, DETAILFRAGMENT_TAG)
                     .commit();
+            displayEmptyState(false);
         } else {
             Intent intent = new Intent(this, DetailActivity.class);
             intent.putExtras(bundle);
@@ -64,14 +65,15 @@ public class MainActivity extends AppCompatActivity implements MainFragment.Call
     }
 
     @Override
-    public void onMenuItemSelected() {
+    public void displayEmptyState(boolean isEmptyView) {
         TextView emptyDetailsView = (TextView) findViewById(R.id.empty_details_view);
         FrameLayout detailsContainer = (FrameLayout) findViewById(R.id.movie_detail_container);
-        if (mTwoPane) {
+        if (mTwoPane && isEmptyView) {
             emptyDetailsView.setVisibility(View.VISIBLE);
             detailsContainer.setVisibility(View.GONE);
-        } else {
+        } else if (mTwoPane && !isEmptyView) {
             emptyDetailsView.setVisibility(View.GONE);
+            detailsContainer.setVisibility(View.VISIBLE);
         }
     }
 }
