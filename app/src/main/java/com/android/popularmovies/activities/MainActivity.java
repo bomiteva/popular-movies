@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import com.android.popularmovies.R;
@@ -65,8 +66,10 @@ public class MainActivity extends AppCompatActivity implements MainFragment.Call
     @Override
     public void onMenuItemSelected() {
         TextView emptyDetailsView = (TextView) findViewById(R.id.empty_details_view);
+        FrameLayout detailsContainer = (FrameLayout) findViewById(R.id.movie_detail_container);
         if (mTwoPane) {
             emptyDetailsView.setVisibility(View.VISIBLE);
+            detailsContainer.setVisibility(View.GONE);
         } else {
             emptyDetailsView.setVisibility(View.GONE);
         }
