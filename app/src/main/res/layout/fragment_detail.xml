@@ -24,7 +24,8 @@
                 android:layout_marginTop="64dp"
                 android:clickable="true"
                 app:borderWidth="0dp"
-                app:fabSize="normal" />
+                app:fabSize="normal"
+                android:visibility="invisible"/>
 
         <LinearLayout
                 android:layout_width="match_parent"

@@ -339,6 +339,7 @@ public class DetailActivityFragment extends Fragment implements MovieVideoAdapte
     }
 
     private void updateFabButton() {
+        mFabButton.setVisibility(View.VISIBLE);
         if (mIsFavourite) {
             mFabButton.setImageDrawable(getContext().getDrawable(R.drawable.ic_favorite_white_24dp));
         } else {
