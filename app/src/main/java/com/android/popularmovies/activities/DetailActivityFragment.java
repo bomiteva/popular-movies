@@ -1,8 +1,11 @@
 package com.android.popularmovies.activities;
 
+import android.content.ContentValues;
 import android.content.Intent;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.LinearLayoutManager;
@@ -23,6 +26,7 @@ import android.widget.Toast;
 import com.android.popularmovies.R;
 import com.android.popularmovies.adapter.MovieReviewAdapter;
 import com.android.popularmovies.adapter.MovieVideoAdapter;
+import com.android.popularmovies.data.MovieContract;
 import com.android.popularmovies.model.JSONDataParser;
 import com.android.popularmovies.model.Movie;
 import com.android.popularmovies.model.Review;
@@ -70,6 +74,9 @@ public class DetailActivityFragment extends Fragment implements MovieVideoAdapte
 
     private ShareActionProvider mShareActionProvider;
 
+    private boolean mIsFavourite;
+    private FloatingActionButton mFabButton;
+
     public DetailActivityFragment() {
     }
 
@@ -101,6 +108,8 @@ public class DetailActivityFragment extends Fragment implements MovieVideoAdapte
         mMovieReviewsAdapter = new MovieReviewAdapter(new ArrayList<Review>());
         mMovieReviews.setAdapter(mMovieReviewsAdapter);
 
+        mFabButton = (FloatingActionButton) rootView.findViewById(R.id.fab);
+
         Bundle bundle;
         Intent intent = getActivity().getIntent();
         if (intent != null && intent.getExtras() != null) {
@@ -112,6 +121,7 @@ public class DetailActivityFragment extends Fragment implements MovieVideoAdapte
         if (bundle != null) {
             mMovie = bundle.getParcelable(PARAM_MOVIE);
             displayData(mMovie);
+            displayFavouriteButton(mMovie);
 
             if (mMovie != null) {
                 // Fetch videos only if savedInstanceState == null
@@ -268,4 +278,72 @@ public class DetailActivityFragment extends Fragment implements MovieVideoAdapte
     public void play(Video video) {
         startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(YOUTUBE_URL + video.getKey())));
     }
+
+
+    private void displayFavouriteButton(final Movie movie) {
+        Cursor movieCursor = getContext().getContentResolver().query(
+                MovieContract.MovieEntry.CONTENT_URI,
+                new String[]{MovieContract.MovieEntry.COLUMN_MOVIE_ID},
+                MovieContract.MovieEntry.COLUMN_MOVIE_ID + " = " + movie.getId(),
+                null,
+                null);
+
+        if (movieCursor != null && movieCursor.moveToFirst()) {
+            mIsFavourite = true;
+        } else {
+            mIsFavourite = false;
+        }
+
+        updateFabButton();
+
+        mFabButton.setOnClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        markAsFavorite(movie);
+                    }
+                });
+    }
+
+    private void markAsFavorite(final Movie movie) {
+        if (mIsFavourite) {
+            getContext().getContentResolver().delete(MovieContract.MovieEntry.CONTENT_URI,
+                    MovieContract.MovieEntry.COLUMN_MOVIE_ID + " = " + movie.getId(), null);
+            Toast.makeText(getContext(), R.string.message_movie_delete, Toast.LENGTH_SHORT).show();
+        } else {
+            ContentValues movieValues = new ContentValues();
+            movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_ID,
+                    movie.getId());
+            movieValues.put(MovieContract.MovieEntry.COLUMN_ORIGINAL_TITLE,
+                    movie.getOriginalTitle());
+            movieValues.put(MovieContract.MovieEntry.COLUMN_POSTER_PATH,
+                    movie.getPosterPath());
+            movieValues.put(MovieContract.MovieEntry.COLUMN_OVERVIEW,
+                    movie.getOverview());
+            movieValues.put(MovieContract.MovieEntry.COLUMN_RATING,
+                    movie.getRating());
+            movieValues.put(MovieContract.MovieEntry.COLUMN_VOTE_COUNT,
+                    movie.getVoteCount());
+            movieValues.put(MovieContract.MovieEntry.COLUMN_RELEASE_DATE,
+                    movie.getReleaseDate());
+            movieValues.put(MovieContract.MovieEntry.COLUMN_BACKDROP_PATH,
+                    movie.getBackdropPath());
+            getContext().getContentResolver().insert(
+                    MovieContract.MovieEntry.CONTENT_URI,
+                    movieValues
+            );
+            Toast.makeText(getContext(), R.string.message_movie_save, Toast.LENGTH_SHORT).show();
+        }
+        mIsFavourite = !mIsFavourite;
+        updateFabButton();
+    }
+
+    private void updateFabButton() {
+        if (mIsFavourite) {
+            mFabButton.setImageDrawable(getContext().getDrawable(R.drawable.ic_favorite_white_24dp));
+        } else {
+            mFabButton.setImageDrawable(getContext().getDrawable(R.drawable.ic_favorite_border_white_24dp));
+        }
+    }
+
 }

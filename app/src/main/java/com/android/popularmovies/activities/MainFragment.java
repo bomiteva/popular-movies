@@ -62,6 +62,12 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
          * MainFragmentCallback for when an item has been selected.
          */
         public void onItemSelected(Movie movie);
+
+        /**
+         * MainFragmentCallback for when an menu item has been selected.
+         */
+        public void onMenuItemSelected();
+
     }
 
     public MainFragment() {
@@ -77,17 +83,19 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        GridView rootView = (GridView) inflater.inflate(R.layout.fragment_main, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_main, container, false);
+        GridView grid = (GridView) rootView.findViewById(R.id.gridview_movies);
 
         moviesAdapter = new MovieAdapter(getActivity(), new ArrayList<Movie>());
-        rootView.setAdapter(moviesAdapter);
-        rootView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        grid.setAdapter(moviesAdapter);
+        grid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Movie movie = moviesAdapter.getItem(position);
                 ((Callback) getActivity()).onItemSelected(movie);
             }
         });
+        grid.setEmptyView(rootView.findViewById(R.id.empty_list_view));
 
         if (savedInstanceState != null) {
             actionType = savedInstanceState.getString(PARAM_ACTION);
@@ -151,6 +159,9 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        // display empty view
+        ((Callback) getActivity()).onMenuItemSelected();
+
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.

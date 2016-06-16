@@ -4,6 +4,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.View;
+import android.widget.TextView;
 
 import com.android.popularmovies.R;
 import com.android.popularmovies.model.Movie;
@@ -57,6 +59,16 @@ public class MainActivity extends AppCompatActivity implements MainFragment.Call
             Intent intent = new Intent(this, DetailActivity.class);
             intent.putExtras(bundle);
             startActivity(intent);
+        }
+    }
+
+    @Override
+    public void onMenuItemSelected() {
+        TextView emptyDetailsView = (TextView) findViewById(R.id.empty_details_view);
+        if (mTwoPane) {
+            emptyDetailsView.setVisibility(View.VISIBLE);
+        } else {
+            emptyDetailsView.setVisibility(View.GONE);
         }
     }
 }
